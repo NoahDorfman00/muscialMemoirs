@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Noah Dorfman">
+    <meta name="generator" content="Hugo 0.108.0">
+    <title>Musical Memoirs</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/carousel/">
+
+    <link href="https://cdn.datatables.net/v/dt/dt-2.0.7/datatables.min.css" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
+    <script src="https://cdn.datatables.net/v/dt/dt-2.0.7/datatables.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+
+      
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyD9DKwr7qp-QJHCVegItvSDktSuR48yuJI",
+      authDomain: "musicalmemoirs-f35ba.firebaseapp.com",
+      databaseURL: "https://musicalmemoirs-f35ba-default-rtdb.firebaseio.com",
+      projectId: "musicalmemoirs-f35ba",
+      storageBucket: "musicalmemoirs-f35ba.appspot.com",
+      messagingSenderId: "1008437474417",
+      appId: "1:1008437474417:web:05075de89f9a038b8217d0",
+      measurementId: "G-PVM7TH88DH"
+    };
+    firebase.initializeApp(config);
+    </script>
+    
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+    
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      const firebaseConfig = {
+        apiKey: "AIzaSyD9DKwr7qp-QJHCVegItvSDktSuR48yuJI",
+        authDomain: "musicalmemoirs-f35ba.firebaseapp.com",
+        projectId: "musicalmemoirs-f35ba",
+        storageBucket: "musicalmemoirs-f35ba.appspot.com",
+        messagingSenderId: "1008437474417",
+        appId: "1:1008437474417:web:05075de89f9a038b8217d0",
+        measurementId: "G-PVM7TH88DH"
+      };
+    
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+    </script>
+
+    <script>
+    var Ref = firebase.database().ref();
+    var inqRef = firebase.database().ref().child("Inquiries");
+    var dataSet = []
+    inqRef.orderByChild('time').on('value', (snapshot) => {
+      newInq = snapshot.val();
+      var data = []
+
+      var div0 = document.createElement('div');
+      div0.innerHTML = newInq.time;
+      data.push(div0);
+
+      var div1 = document.createElement('div');
+      div1.innerHTML = newInq.name;
+      data.push(div1);
+
+      var div2 = document.createElement('div');
+      div2.innerHTML = newInq.email;
+      data.push(div2);
+
+      var div3 = document.createElement('div');
+      div3.innerHTML = newInq.phone;
+      data.push(div3);
+
+      dataSet.push(data);
+    })
+    
+    new DataTable('#example', {
+        columns: [
+            { title: 'Time' },
+            { title: 'Name' },
+            { title: 'Email' },
+            { title: 'Phone' }
+        ],
+        data: dataSet
+    });
+    function inqRefresh() {
+      inqRef.orderByChild('time').on('value', (snapshot) => {
+        newInq = snapshot.val();
+        inquiries.innerHTML += "<br>" + Object.values(player).join("\t");
+        console.log('time: ' + newInq.time);
+        console.log('name: ' + newInq.name);
+        console.log('email: ' + newInq.email);
+        console.log('phone: ' + newInq.phone);
+      });
+    }
+
+    inqRefresh();
+
+    // Attach an asynchronous callback to read the data at our posts reference
+    inqRef.on('value', (snapshot) => {
+      inqRefresh();
+    });
+    
+    function inqSubmit() {
+      const elapsed = Date.now();
+      const date = new Date(elapsed);
+
+      var inq = {
+        "key": String(elapsed),
+        "time": date.toLocaleString('en-US', { timeZone: 'America/New_York' }),
+        "name": String(document.getElementById("inqFormName").value),
+        "email": String(document.getElementById("inqFormMail").value),
+        "phone": String(document.getElementById("inqFormNum").value)
+      }
+      console.log(JSON.stringify(inq));
+
+      var issue = false;
+      if (!inq.name)
+      {
+        console.log("no name");
+        issue = true;
+        window.alert("Please enter your name!");
+      }
+      if (!(inq.phone || inq.email))
+      {
+        console.log("no email or number");
+        issue = true;
+        window.alert("Please enter your phone number and/or email address!");
+      }
+
+      if (!issue)
+      {
+        keyRef = inqRef.child(inq.key);
+        keyRef.child("time").set(inq.time);
+        keyRef.child("name").set(inq.name);
+        keyRef.child("email").set(inq.email);
+        keyRef.child("phone").set(inq.phone);
+        console.log("Data set");
+      }
+
+      inqForm.reset(); 	
+    }
+    </script>
+
+    
+
+<link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+
+      .b-example-divider {
+        height: 3rem;
+        background-color: rgba(0, 0, 0, .1);
+        border: solid rgba(0, 0, 0, .15);
+        border-width: 1px 0;
+        box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+      }
+
+      .b-example-vr {
+        flex-shrink: 0;
+        width: 1.5rem;
+        height: 100vh;
+      }
+
+      .bi {
+        vertical-align: -.125em;
+        fill: currentColor;
+      }
+
+      .nav-scroller {
+        position: relative;
+        z-index: 2;
+        height: 2.75rem;
+        overflow-y: hidden;
+      }
+
+      .nav-scroller .nav {
+        display: flex;
+        flex-wrap: nowrap;
+        padding-bottom: 1rem;
+        margin-top: -1px;
+        overflow-x: auto;
+        text-align: center;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+      .maintxt {
+        background-image: url(assets/icon/heartSin.gif);
+        background-size: cover;
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+
+    
+    <!-- Custom styles for this template -->
+    <link href="../styles/musical.css" rel="stylesheet">
+  </head>
+  <body>
+    
+<header>
+  <nav class="navbar navbar-expand-md fixed-top bg-white">
+    <div class="container-fluid">
+      <img src="../assets/icon/logo.gif" width="25%" height="25%" class="d-inline-block align-top" alt="Bootstrap" loading="lazy"></img>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="../index.html">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="../samples/index.html">Sample Projects</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="modal" data-bs-target="#signup">Get Started</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="container">
+    <div class="row featurette">
+      <div class="col-md-7 order-md-2">
+        <h2 class="featurette-heading fw-normal lh-1"><span class="text-muted"><b>Inquiries</b></span></h2>
+        <table id="example" class="display" width="100%"></table>
+      </div>
+    </div>
+  </div><!-- /.container -->
+  <!-- FOOTER -->
+  <footer class="container">
+    <p class="float-end"><a href="#">Back to top</a></p>
+    <p>&copy; 2023 Musical Memoirs &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+  </footer>
+</main>
+
+
+    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
+
+      
+  </body>
+</html>
