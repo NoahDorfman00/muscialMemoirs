@@ -8,6 +8,9 @@
     <meta name="generator" content="Hugo 0.108.0">
     <title>Musical Memoirs</title>
 
+    <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
+
     <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.datatables.net/v/dt/dt-2.0.7/datatables.min.js"></script>
@@ -31,8 +34,9 @@
     </script>
     
     <script type="module">
+      import { getAuth } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
       // Import the functions you need from the SDKs you need
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
       // TODO: Add SDKs for Firebase products that you want to use
       // https://firebase.google.com/docs/web/setup#available-libraries
     
@@ -50,61 +54,160 @@
     
       // Initialize Firebase
       const app = initializeApp(firebaseConfig);
+
+      firebase.auth().useDeviceLanguage();
+      // var provider = new firebase.auth.GoogleAuthProvider();
+      // firebase.auth()
+      //   .signInWithPopup(provider)
+      //   .then((result) => {
+      //     /** @type {firebase.auth.OAuthCredential} */
+      //     var credential = result.credential;
+
+      //     // This gives you a Google Access Token. You can use it to access the Google API.
+      //     var token = credential.accessToken;
+      //     // The signed-in user info.
+      //     var user = result.user;
+      //     // IdP data available in result.additionalUserInfo.profile.
+      //       // ...
+      //   }).catch((error) => {
+      //     // Handle Errors here.
+      //     var errorCode = error.code;
+      //     var errorMessage = error.message;
+      //     // The email of the user's account used.
+      //     var email = error.email;
+      //     // The firebase.auth.AuthCredential type that was used.
+      //     var credential = error.credential;
+      //     // ...
+      //   });
     </script>
 
     <script>
-    var Ref = firebase.database().ref();
-    var inqRef = firebase.database().ref().child("Inquiries");
-    var dataSet = []
-    inqRef.orderByChild('time').on('value', (snapshot) => {
-      newInq = snapshot.val();
-      var data = []
+    const Ref = firebase.database().ref();
+    const inqRef = firebase.database().ref().child("Inquiries");
 
-      var div0 = document.createElement('div');
-      div0.innerHTML = newInq.time;
-      data.push(div0);
+    function addElement(child) {
+      var inq = child.value();
+      console.log(inq.time + ", " + inq.name + ", " + inq.email + ", " + inq.phone);
+    }
 
-      var div1 = document.createElement('div');
-      div1.innerHTML = newInq.name;
-      data.push(div1);
-
-      var div2 = document.createElement('div');
-      div2.innerHTML = newInq.email;
-      data.push(div2);
-
-      var div3 = document.createElement('div');
-      div3.innerHTML = newInq.phone;
-      data.push(div3);
-
-      dataSet.push(data);
-    })
-    
-    new DataTable('#example', {
-        columns: [
-            { title: 'Time' },
-            { title: 'Name' },
-            { title: 'Email' },
-            { title: 'Phone' }
-        ],
-        data: dataSet
-    });
-    function inqRefresh() {
-      inqRef.orderByChild('time').on('value', (snapshot) => {
-        newInq = snapshot.val();
-        inquiries.innerHTML += "<br>" + Object.values(player).join("\t");
-        console.log('time: ' + newInq.time);
-        console.log('name: ' + newInq.name);
-        console.log('email: ' + newInq.email);
-        console.log('phone: ' + newInq.phone);
+    function loadTable() {
+      inqRef.once('value', function(snapshot) {
+        console.log(snapshot.val());
+        snapshot.forEach((child) => {
+          addElement(child);
+        })
+      }).catch((error) => {
+        console.error(error);
       });
     }
 
-    inqRefresh();
+    var ui = new firebaseui.auth.AuthUI(firebase.auth());
+    var uiConfig = {
+      callbacks: {
+        signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+          // User successfully signed in.
+          // Return type determines whether we continue the redirect automatically
+          // or whether we leave that to developer to handle.
+          loadTable();
+          return true;
+        },
+        uiShown: function() {
+          // The widget is rendered.
+          // Hide the loader.
+          document.getElementById('loader').style.display = 'none';
+        }
+      },
+      // Will use popup for IDP Providers sign-in flow instead of the default, redirect.
+      signInFlow: 'popup',
+      //signInSuccessUrl: '<url-to-redirect-to-on-success>',
+      signInOptions: [
+        // Leave the lines as is for the providers you want to offer your users.
+        firebase.auth.GoogleAuthProvider.PROVIDER_ID
+      ]
+    };
+    ui.start('#firebaseui-auth-container', uiConfig);
+
+    // var query = inqRef.orderByChild("time");
+    // query.on('child_added', function (snapshot) {
+
+    // //inqRef.get().then((snapshot) => {
+    //   if (snapshot.exists()) {
+    //     console.log(snapshot.val())
+    //     // snapshot.forEach((child) => {
+    //     //   updateTable(child);
+    //     // });
+    //   } else {
+    //     console.log("No data available");
+    //   }
+    // });//.catch((error) => {
+    //   //console.error(error);
+    // //});
+
+    // inqRef.on('value', (child) => {
+    //   updateTable(child);
+    // });
+
+    // inqRef.on('child_added', (child) => {
+    //   //snapshot.forEach((child) => {
+    //   updateTable(child);
+    //   //});
+    // });
+    // inqRef.on('child_changed', (child) => {
+    //   //snapshot.forEach((child) => {
+    //   updateTable(child);
+    //   //});
+    // });
+    // .on('child_added', (data) => {
+    //   var dataSet = [];
+    //   newInq = data.val();
+    //   console.log(newInq.time + ", " + newInq.name + ", " + newInq.email + ", " + newInq.phone);
+    //   var divArr = [];
+
+    //   var div0 = document.createElement('div');
+    //   div0.innerHTML = newInq.time;
+    //   divArr.push(div0);
+
+    //   var div1 = document.createElement('div');
+    //   div1.innerHTML = newInq.name;
+    //   divArr.push(div1);
+
+    //   var div2 = document.createElement('div');
+    //   div2.innerHTML = newInq.email;
+    //   divArr.push(div2);
+
+    //   var div3 = document.createElement('div');
+    //   div3.innerHTML = newInq.phone;
+    //   divArr.push(div3);
+
+    //   dataSet.push(divArr);
+    //   console.log(dataSet);
+    //   new DataTable('#example', {
+    //     columns: [
+    //         { title: 'Time' },
+    //         { title: 'Name' },
+    //         { title: 'Email' },
+    //         { title: 'Phone' }
+    //     ],
+    //     data: dataSet
+    //   });
+    // });
+    // function inqRefresh() {
+    //   inqRef.orderByChild('time').on('value', (snapshot) => {
+    //     newInq = snapshot.val();
+    //     inquiries.innerHTML += "<br>" + Object.values(player).join("\t");
+    //     console.log('time: ' + newInq.time);
+    //     console.log('name: ' + newInq.name);
+    //     console.log('email: ' + newInq.email);
+    //     console.log('phone: ' + newInq.phone);
+    //   });
+    // }
+
+    //inqRefresh();
 
     // Attach an asynchronous callback to read the data at our posts reference
-    inqRef.on('value', (snapshot) => {
-      inqRefresh();
-    });
+    // inqRef.on('value', (snapshot) => {
+    //   inqRefresh();
+    // });
     
     function inqSubmit() {
       const elapsed = Date.now();
@@ -135,11 +238,13 @@
 
       if (!issue)
       {
-        keyRef = inqRef.child(inq.key);
-        keyRef.child("time").set(inq.time);
-        keyRef.child("name").set(inq.name);
-        keyRef.child("email").set(inq.email);
-        keyRef.child("phone").set(inq.phone);
+        newInqRef = inqRef.push();
+        newInqRef.set({
+          time: inq.time,
+          name: inq.name,
+          email: inq.email,
+          phone: inq.phone
+        });
         console.log("Data set");
       }
 
@@ -204,7 +309,7 @@
         -webkit-overflow-scrolling: touch;
       }
       .maintxt {
-        background-image: url(../assets/icon/heartSin.gif);
+        background-image: url(assets/icon/heartSin.gif);
         background-size: cover;
         width: 100px;
         height: 100px;
@@ -242,9 +347,41 @@
 </header>
 
 <main>
+  <div class="modal" id="signup" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-4 shadow">
+        <div class="modal-header p-5 pb-4 border-bottom-0">
+          <h1 class="fw-bold mb-0 fs-2" style="color:#942626" >Create your Musical Memoir today</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-5 pt-0">
+          <form class="" id="inqForm">
+            <div class="form-floating mb-3">
+              <input type="name" class="form-control rounded-3" id="inqFormName" placeholder="First Last">
+              <label for="inqFormName">Full name</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="email" class="form-control rounded-3" id="inqFormMail" placeholder="name@example.com">
+              <label for="inqFormMail">Email address</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="phone" class="form-control rounded-3" id="inqFormNum" placeholder="(123)456-7890">
+              <label for="inqFormNum">Phone number</label>
+            </div>
+            <button class="w-100 mb-2 btn btn-lg rounded-3 btn-fit" onclick="inqSubmit()">Get started</button>
+            <small class="text-muted">By clicking Get started, you agree to be contacted by Musical Memoirs.</small>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="container">
+    <hr class="featurette-divider">
     <div class="row featurette">
       <div class="col-md-7 order-md-2">
+        <div id="firebaseui-auth-container"></div>
+        <div id="loader">Loading...</div>
         <h2 class="featurette-heading fw-normal lh-1"><span class="text-muted"><b>Inquiries</b></span></h2>
         <table id="example" class="display" width="100%"></table>
       </div>
