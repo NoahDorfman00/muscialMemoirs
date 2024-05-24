@@ -8,53 +8,30 @@
     <meta name="generator" content="Hugo 0.108.0">
     <title>Musical Memoirs</title>
 
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/carousel/">
-
     <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
-    <script>
-
-      
-    // Initialize Firebase
-    var config = {
-      apiKey: "AIzaSyD9DKwr7qp-QJHCVegItvSDktSuR48yuJI",
-      authDomain: "musicalmemoirs-f35ba.firebaseapp.com",
-      databaseURL: "https://musicalmemoirs-f35ba-default-rtdb.firebaseio.com",
-      projectId: "musicalmemoirs-f35ba",
-      storageBucket: "musicalmemoirs-f35ba.appspot.com",
-      messagingSenderId: "1008437474417",
-      appId: "1:1008437474417:web:05075de89f9a038b8217d0",
-      measurementId: "G-PVM7TH88DH"
-    };
-    firebase.initializeApp(config);
-    </script>
-    
+    <!-- <script type="module" src="../scripts/firebaseInit.js"></script>
+    <script type="module" src="../scripts/inquiryTx.js"></script> -->
     <script type="module">
-      // Import the functions you need from the SDKs you need
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
-      // TODO: Add SDKs for Firebase products that you want to use
-      // https://firebase.google.com/docs/web/setup#available-libraries
-    
-      // Your web app's Firebase configuration
-      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-      const firebaseConfig = {
-        apiKey: "AIzaSyD9DKwr7qp-QJHCVegItvSDktSuR48yuJI",
-        authDomain: "musicalmemoirs-f35ba.firebaseapp.com",
-        projectId: "musicalmemoirs-f35ba",
-        storageBucket: "musicalmemoirs-f35ba.appspot.com",
-        messagingSenderId: "1008437474417",
-        appId: "1:1008437474417:web:05075de89f9a038b8217d0",
-        measurementId: "G-PVM7TH88DH"
-      };
-    
       // Initialize Firebase
-      const app = initializeApp(firebaseConfig);
-    </script>
+      const config = {
+          apiKey: "AIzaSyD9DKwr7qp-QJHCVegItvSDktSuR48yuJI",
+          authDomain: "musicalmemoirs-f35ba.firebaseapp.com",
+          databaseURL: "https://musicalmemoirs-f35ba-default-rtdb.firebaseio.com",
+          projectId: "musicalmemoirs-f35ba",
+          storageBucket: "musicalmemoirs-f35ba.appspot.com",
+          messagingSenderId: "1008437474417",
+          appId: "1:1008437474417:web:05075de89f9a038b8217d0",
+          measurementId: "G-PVM7TH88DH"
+      };
+      firebase.initializeApp(config);
 
-    <script>
-    var Ref = firebase.database().ref();
-    var inqRef = firebase.database().ref().child("Inquiries");
-    
-    function inqSubmit() {
+      firebase.auth().useDeviceLanguage();
+
+      const Ref = firebase.database().ref();
+      const inqRef = firebase.database().ref().child("Inquiries");
+
+      const submitButton = document.getElementById('submitButton');
+      submitButton.addEventListener('click', () => {
         const elapsed = Date.now();
         const date = new Date(elapsed);
 
@@ -83,7 +60,7 @@
 
         if (!issue)
         {
-          newInqRef = inqRef.push();
+          var newInqRef = inqRef.push();
           newInqRef.set({
             time: inq.time,
             name: inq.name,
@@ -94,13 +71,11 @@
         }
 
         inqForm.reset(); 	
-      }
-    
-    </script>
+      });
+    </script> 
 
-    
-
-<link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../styles/musical.css" rel="stylesheet">
 
     <style>
 
@@ -215,7 +190,7 @@
                 <input type="phone" class="form-control rounded-3" id="inqFormNum" placeholder="(123)456-7890">
                 <label for="inqFormNum">Phone number</label>
               </div>
-              <button class="w-100 mb-2 btn btn-lg rounded-3 btn-fit" onclick="inqSubmit()">Get started</button>
+              <button class="w-100 mb-2 btn btn-lg rounded-3 btn-fit" id="submitButton">Get started</button>
               <small class="text-muted">By clicking Get started, you agree to be contacted by Musical Memoirs.</small>
             </form>
           </div>

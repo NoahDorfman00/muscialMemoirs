@@ -11,9 +11,71 @@
     <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.7/js/dataTables.js"></script>
-    <script type="module" src="../scripts/firebaseInit.js"></script>
-    <script type="module" src="../scripts/inquiryTx.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
+    <!-- <script type="module" src="../scripts/firebaseInit.js"></script>
+    <script type="module" src="../scripts/inquiryTx.js"></script> -->
     <script type="module">
+      // Initialize Firebase
+      const config = {
+          apiKey: "AIzaSyD9DKwr7qp-QJHCVegItvSDktSuR48yuJI",
+          authDomain: "musicalmemoirs-f35ba.firebaseapp.com",
+          databaseURL: "https://musicalmemoirs-f35ba-default-rtdb.firebaseio.com",
+          projectId: "musicalmemoirs-f35ba",
+          storageBucket: "musicalmemoirs-f35ba.appspot.com",
+          messagingSenderId: "1008437474417",
+          appId: "1:1008437474417:web:05075de89f9a038b8217d0",
+          measurementId: "G-PVM7TH88DH"
+      };
+      firebase.initializeApp(config);
+
+      firebase.auth().useDeviceLanguage();
+
+      const Ref = firebase.database().ref();
+      const inqRef = firebase.database().ref().child("Inquiries");
+
+      const submitButton = document.getElementById('submitButton');
+      submitButton.addEventListener('click', () => {
+        const elapsed = Date.now();
+        const date = new Date(elapsed);
+
+        var inq = {
+          "key": String(elapsed),
+          "time": date.toLocaleString('en-US', { timeZone: 'America/New_York' }),
+          "name": String(document.getElementById("inqFormName").value),
+          "email": String(document.getElementById("inqFormMail").value),
+          "phone": String(document.getElementById("inqFormNum").value)
+        }
+        console.log(JSON.stringify(inq));
+
+        var issue = false;
+        if (!inq.name)
+        {
+          console.log("no name");
+          issue = true;
+          window.alert("Please enter your name!");
+        }
+        if (!(inq.phone || inq.email))
+        {
+          console.log("no email or number");
+          issue = true;
+          window.alert("Please enter your phone number and/or email address!");
+        }
+
+        if (!issue)
+        {
+          var newInqRef = inqRef.push();
+          newInqRef.set({
+            time: inq.time,
+            name: inq.name,
+            email: inq.email,
+            phone: inq.phone
+          });
+          console.log("Data set");
+        }
+
+        inqForm.reset(); 	
+      });
+
       import { getAuth } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
 
       const table = new DataTable('#example');
@@ -48,8 +110,8 @@
         });
       }
 
-      const button = document.getElementById('login');
-      button.addEventListener('click', () => {
+      const loginButton = document.getElementById('login');
+      loginButton.addEventListener('click', () => {
         var email = String(document.getElementById("loginEmail").value);
         var password = String(document.getElementById("loginPw").value);
         firebase.auth().signInWithEmailAndPassword(email, password)
@@ -179,7 +241,7 @@
               <input type="phone" class="form-control rounded-3" id="inqFormNum" placeholder="(123)456-7890">
               <label for="inqFormNum">Phone number</label>
             </div>
-            <button class="w-100 mb-2 btn btn-lg rounded-3 btn-fit" onclick="inqSubmit()">Get started</button>
+            <button class="w-100 mb-2 btn btn-lg rounded-3 btn-fit" id="submitButton">Get started</button>
             <small class="text-muted">By clicking Get started, you agree to be contacted by Musical Memoirs.</small>
           </form>
         </div>
