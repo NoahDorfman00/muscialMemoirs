@@ -1,309 +1,162 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="Noah Dorfman">
-    <meta name="generator" content="Hugo 0.108.0">
-    <title>Musical Memoirs</title>
 
-    <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
-    <!-- <script type="module" src="scripts/firebaseInit.js"></script>
-    <script type="module" src="scripts/inquiryTx.js"></script> -->
-    <script type="module">
-      // Initialize Firebase
-      const config = {
-          apiKey: "AIzaSyD9DKwr7qp-QJHCVegItvSDktSuR48yuJI",
-          authDomain: "musicalmemoirs-f35ba.firebaseapp.com",
-          databaseURL: "https://musicalmemoirs-f35ba-default-rtdb.firebaseio.com",
-          projectId: "musicalmemoirs-f35ba",
-          storageBucket: "musicalmemoirs-f35ba.appspot.com",
-          messagingSenderId: "1008437474417",
-          appId: "1:1008437474417:web:05075de89f9a038b8217d0",
-          measurementId: "G-PVM7TH88DH"
-      };
-      firebase.initializeApp(config);
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Musical Memoirs - Create personalized heartbeat recordings and musical memories">
+  <meta name="author" content="Noah Dorfman">
+  <title>Musical Memoirs</title>
 
-      firebase.auth().useDeviceLanguage();
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
 
-      const Ref = firebase.database().ref();
-      const inqRef = firebase.database().ref().child("Inquiries");
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
-      const submitButton = document.getElementById('submitButton');
-      submitButton.addEventListener('click', () => {
-        const elapsed = Date.now();
-        const date = new Date(elapsed);
+  <!-- Styles -->
+  <link href="styles/musical.css" rel="stylesheet">
+</head>
 
-        var inq = {
-          "key": String(elapsed),
-          "time": date.toLocaleString('en-US', { timeZone: 'America/New_York' }),
-          "name": String(document.getElementById("inqFormName").value),
-          "email": String(document.getElementById("inqFormMail").value),
-          "phone": String(document.getElementById("inqFormNum").value)
-        }
-        console.log(JSON.stringify(inq));
-
-        var issue = false;
-        if (!inq.name)
-        {
-          console.log("no name");
-          issue = true;
-          window.alert("Please enter your name!");
-        }
-        if (!(inq.phone || inq.email))
-        {
-          console.log("no email or number");
-          issue = true;
-          window.alert("Please enter your phone number and/or email address!");
-        }
-
-        if (!issue)
-        {
-          var newInqRef = inqRef.push();
-          newInqRef.set({
-            time: inq.time,
-            name: inq.name,
-            email: inq.email,
-            phone: inq.phone
-          });
-          console.log("Data set");
-        }
-
-        inqForm.reset(); 	
-      });
-    </script> 
-
-    <link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="styles/musical.css" rel="stylesheet">
-
-    <style>
-
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
-      }
-
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
-      }
-
-      .b-example-divider {
-        height: 3rem;
-        background-color: rgba(0, 0, 0, .1);
-        border: solid rgba(0, 0, 0, .15);
-        border-width: 1px 0;
-        box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
-      }
-
-      .b-example-vr {
-        flex-shrink: 0;
-        width: 1.5rem;
-        height: 100vh;
-      }
-
-      .bi {
-        vertical-align: -.125em;
-        fill: currentColor;
-      }
-
-      .nav-scroller {
-        position: relative;
-        z-index: 2;
-        height: 2.75rem;
-        overflow-y: hidden;
-      }
-
-      .nav-scroller .nav {
-        display: flex;
-        flex-wrap: nowrap;
-        padding-bottom: 1rem;
-        margin-top: -1px;
-        overflow-x: auto;
-        text-align: center;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-      }
-      .maintxt {
-        background-image: url(assets/icon/heartSin.gif);
-        background-size: cover;
-        width: 100px;
-        height: 100px;
-      }
-    </style>
-
-    
-    <!-- Custom styles for this template -->
-    <link href="styles/musical.css" rel="stylesheet">
-  </head>
-  <body>
-    
-<header>
-  <nav class="navbar navbar-expand-md fixed-top bg-white">
-    <div class="container-fluid">
-      <img src="assets/icon/logo.gif" width="25%" height="25%" class="d-inline-block align-top" alt="Bootstrap" loading="lazy"></img>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+<body>
+  <nav class="navbar">
+    <div class="container navbar-content">
+      <img src="assets/icon/logo.gif" alt="Musical Memoirs" class="logo" width="150" height="50">
+      <button id="mobile-menu" class="mobile-menu" aria-label="Toggle menu">
+        <span class="hamburger"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarCollapse">
-        <ul class="navbar-nav me-auto mb-2 mb-md-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="samples/index.html">Sample Projects</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="modal" data-bs-target="#signup">Get Started</a>
-          </li>
-        </ul>
-      </div>
+      <ul class="nav-links">
+        <li><a href="#" class="nav-link active">Home</a></li>
+        <li><a href="samples/index.html" class="nav-link">Sample Projects</a></li>
+        <li><a href="#" class="nav-link" onclick="openModal('signup')">Get Started</a></li>
+      </ul>
     </div>
   </nav>
-</header>
 
-<main>
-  <div class="container">
-    <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
-      <div class="carousel-indicators">
-        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+  <main>
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container">
+        <div class="hero-content">
+          <h1>Create Your Musical Legacy</h1>
+          <p>Capture the essence of life through heartbeat recordings and personalized music</p>
+          <button class="btn" onclick="openModal('signup')">Get Started</button>
+        </div>
       </div>
-      <div class="carousel-inner">
-        <div class="carousel-item active">
-          <img src="assets/images/slide1.png" height=100% class="d-inline-block align-top" aria-hidden="true" focusable="false"></img>
-          <div class="container">
-            <div class="carousel-caption text-start">
-              <h1>Rhythm.</h1>
-              <p>Create a personal project that utilizes the natural beat of the heart.</p>
-              <p><a class="btn btn-lg btn-fit" data-bs-toggle="modal" data-bs-target="#signup">Get started</a></p>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section">
+      <div class="container">
+        <div class="media-grid">
+          <div class="card">
+            <h2>Rhythm</h2>
+            <p>Create a personal project that utilizes the natural beat of the heart.</p>
+            <img src="assets/images/slide1.png" alt="Rhythm" class="feature-image" loading="lazy" width="600"
+              height="400">
+          </div>
+          <div class="card">
+            <h2>Music</h2>
+            <p>Build an emotional time capsule through favorite songs or original compositions.</p>
+            <img src="assets/images/slide2.png" alt="Music" class="feature-image" loading="lazy" width="600"
+              height="400">
+          </div>
+          <div class="card">
+            <h2>Legacy</h2>
+            <p>Capture the essence and individuality of those you love through song.</p>
+            <img src="assets/images/slide3.png" alt="Legacy" class="feature-image" loading="lazy" width="600"
+              height="400">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="section">
+      <div class="container">
+        <div class="card">
+          <div class="media-grid">
+            <div>
+              <h2 class="section-title">Founders of <span>Musical Memoirs</span></h2>
+              <p><b>Gabi LaSasso</b>, MT-BC and <b>Jacob Dorfman</b>, MT-BC are clinically trained musicians, both with
+                bachelors degrees in music therapy. From the time they began their collegiate training in 2017, the pair
+                have been refining their therapeutic skills and musicianship through years of practice, extensive study,
+                and countless in-person interactions with a diverse population of people. With a firm belief in the
+                humanistic approach to music therapy, they specialize in person-centered interventions such as heartbeat
+                recordings and personal songwriting opportunities.</p>
+            </div>
+            <div>
+              <img src="assets/images/jacobAndGab.png" alt="Founders" class="founders-image" loading="lazy" width="600"
+                height="400">
             </div>
           </div>
         </div>
-        <div class="carousel-item">
-          <img src="assets/images/slide2.png" height=100% class="d-inline-block align-top" aria-hidden="true" focusable="false"></img>
-          <div class="container">
-            <div class="carousel-caption">
-              <h1>Music.</h1>
-              <p>Build an emotional time capsule through favorite songs or original compositions.</p>
-              <p><a class="btn btn-lg btn-fit" data-bs-toggle="modal" data-bs-target="#signup">Get started</a></p>
+      </div>
+    </section>
+
+    <!-- News Section -->
+    <section class="section">
+      <div class="container">
+        <div class="card">
+          <h2 class="section-title">We made the <span>NEWS</span></h2>
+          <div class="media-grid">
+            <div>
+              <p>Click on your favorite channel to find more articles associated with our created heartbeat recordings.
+              </p>
+              <iframe src="https://6abc.com/video/embed/?pid=13383080" allowfullscreen></iframe>
+            </div>
+            <div class="news-logos">
+              <a
+                href="https://www.cbsnews.com/philadelphia/video/heartbeat-songs-project-in-germantown-shows-the-power-of-music-helping-out-seniors/">
+                <img src="assets/icon/cbs.png" alt="CBS News" width="120" height="40">
+              </a>
+              <a href="https://6abc.com/philly-proud-heartbeat-recordings-music-therapy-songs/13389811/">
+                <img src="assets/icon/6abc.svg" alt="6ABC News" width="120" height="40">
+              </a>
+              <a href="nbc/index.html">
+                <img src="assets/icon/nbc.png" alt="NBC News" width="120" height="40">
+              </a>
             </div>
           </div>
         </div>
-        <div class="carousel-item">
-          <img src="assets/images/slide3.png" height=100% class="d-inline-block align-top" aria-hidden="true" focusable="false"></img>
-          <div class="container">
-            <div class="carousel-caption text-end">
-              <h1>Legacy.</h1>
-              <p>Capture the essence and individuality of those you love through song.</p>
-              <p><a class="btn btn-lg btn-fit" data-bs-toggle="modal" data-bs-target="#signup">Get started</a></p>
-            </div>
+      </div>
+    </section>
+
+    <!-- Signup Modal -->
+    <div id="signup" class="modal">
+      <div class="modal-content">
+        <h2>Create your Musical Memoir today</h2>
+        <button class="modal-close" onclick="closeModal('signup')" aria-label="Close modal">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+        <form id="inqForm">
+          <div class="form-group">
+            <input type="text" id="inqFormName" class="form-control" placeholder="Full name" required>
           </div>
-        </div>
-      </div>
-      <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-      </button>
-    </div>
-
-    <div class="modal" id="signup" role="dialog">
-      <div class="modal-dialog">
-        <div class="modal-content rounded-4 shadow">
-          <div class="modal-header p-5 pb-4 border-bottom-0">
-            <h1 class="fw-bold mb-0 fs-2" style="color:#942626" >Create your Musical Memoir today</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <div class="form-group">
+            <input type="email" id="inqFormMail" class="form-control" placeholder="Email address">
           </div>
-          <div class="modal-body p-5 pt-0">
-            <form class="" id="inqForm">
-              <div class="form-floating mb-3">
-                <input type="name" class="form-control rounded-3" id="inqFormName" placeholder="First Last">
-                <label for="inqFormName">Full name</label>
-              </div>
-              <div class="form-floating mb-3">
-                <input type="email" class="form-control rounded-3" id="inqFormMail" placeholder="name@example.com">
-                <label for="inqFormMail">Email address</label>
-              </div>
-              <div class="form-floating mb-3">
-                <input type="phone" class="form-control rounded-3" id="inqFormNum" placeholder="(123)456-7890">
-                <label for="inqFormNum">Phone number</label>
-              </div>
-              <button class="w-100 mb-2 btn btn-lg rounded-3 btn-fit" id="submitButton">Get started</button>
-              <small class="text-muted">By clicking Get started, you agree to be contacted by Musical Memoirs.</small>
-            </form>
+          <div class="form-group">
+            <input type="tel" id="inqFormNum" class="form-control" placeholder="Phone number">
           </div>
-        </div>
+          <button type="submit" class="btn">Get Started</button>
+          <small>By clicking Get started, you agree to be contacted by Musical Memoirs.</small>
+        </form>
       </div>
     </div>
-  </div>
+  </main>
 
-  <!-- Marketing messaging and featurettes
-  ================================================== -->
-  <!-- Wrap the rest of the page in another container to center all the content. -->
-
-  <div class="container marketing">
-
-
-    <!-- START THE FEATURETTES -->
-
-    <hr class="featurette-divider">
-
-    <div class="row featurette">
-      <div class="col-md-7 order-md-2">
-        <h2 class="featurette-heading fw-normal lh-1">Founders of <span class="text-muted"><b><i>Musical Memoirs</i></b></span></h2>
-        <p class="lead"><b>Gabi LaSasso</b>, MT-BC and <b>Jacob Dorfman</b>, MT-BC are clinically trained musicians, both with bachelors degrees in music therapy. From the time they began their collegiate training in 2017, the pair have been refining their therapeutic skills and musicianship through years of practice, extensive study, and countless in-person interactions with a diverse population of people. With a firm belief in the humanistic approach to music therapy, they specialize in person-centered interventions such as heartbeat recordings and personal songwriting opportunities.</p>
-      </div>
-      <div class="col-md-5 order-md-1 row align-items-center">
-        <img src="assets/images/jacobAndGab.png" width="100%" class="d-inline-block align-top" alt="Bootstrap" loading="lazy">
-      </div>
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2024 Musical Memoirs &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+      <p><a href="#">Back to top</a></p>
     </div>
-
-    <hr class="featurette-divider">
-
-    <div class="row featurette">
-      <div class="col-md-7">
-        <h2 class="featurette-heading fw-normal lh-1">We made the <span class="text-muted"><b>NEWS</b></span></h2>
-        <p class="lead">Click on your favorite channel to find more articles associated with our created heartbeat recordings.</p>
-      </div>
-      <div class="col-md-5">
-        <iframe style = "aspect-ratio: 16/9; width:100%; height:100%;" src="https://6abc.com/video/embed/?pid=13383080" allowfullscreen alt="Bootstrap" loading="lazy"></iframe>
-      </div>
-    </div>
-    <div class="row" style="margin:30px">
-      <center>
-        <a href="https://www.cbsnews.com/philadelphia/video/heartbeat-songs-project-in-germantown-shows-the-power-of-music-helping-out-seniors/"><img style="padding: 1%" src="assets/icon/cbs.png" height="70px"></img></a>
-        <a href="https://6abc.com/philly-proud-heartbeat-recordings-music-therapy-songs/13389811/"><img style="padding: 1%" src="assets/icon/6abc.svg" height="70px"></img></a>
-        <a href="nbc/index.html"><img style="padding: 1%" src="assets/icon/nbc.png" height="70px"></img></a>
-      </center>
-    </div>
-
-    <hr class="featurette-divider">
-
-    <!-- /END THE FEATURETTES -->
-
-  </div><!-- /.container -->
-
-
-  <!-- FOOTER -->
-  <footer class="container">
-    <p class="float-end"><a href="#">Back to top</a></p>
-    <p>&copy; 2023 Musical Memoirs &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
   </footer>
-</main>
 
+  <!-- Scripts -->
+  <script src="scripts/app.js"></script>
+</body>
 
-    <script src="assets/dist/js/bootstrap.bundle.min.js"></script>
-
-      
-  </body>
 </html>

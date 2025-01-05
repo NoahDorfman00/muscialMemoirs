@@ -1,297 +1,114 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="Noah Dorfman">
-    <meta name="generator" content="Hugo 0.108.0">
-    <title>Musical Memoirs</title>
 
-    <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdn.datatables.net/2.0.7/js/dataTables.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
-    <!-- <script type="module" src="../scripts/firebaseInit.js"></script>
-    <script type="module" src="../scripts/inquiryTx.js"></script> -->
-    <script type="module">
-      // Initialize Firebase
-      const config = {
-          apiKey: "AIzaSyD9DKwr7qp-QJHCVegItvSDktSuR48yuJI",
-          authDomain: "musicalmemoirs-f35ba.firebaseapp.com",
-          databaseURL: "https://musicalmemoirs-f35ba-default-rtdb.firebaseio.com",
-          projectId: "musicalmemoirs-f35ba",
-          storageBucket: "musicalmemoirs-f35ba.appspot.com",
-          messagingSenderId: "1008437474417",
-          appId: "1:1008437474417:web:05075de89f9a038b8217d0",
-          measurementId: "G-PVM7TH88DH"
-      };
-      firebase.initializeApp(config);
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Musical Memoirs - Admin Login">
+  <meta name="author" content="Noah Dorfman">
+  <title>Musical Memoirs - Admin</title>
 
-      firebase.auth().useDeviceLanguage();
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
 
-      const Ref = firebase.database().ref();
-      const inqRef = firebase.database().ref().child("Inquiries");
+  <!-- jQuery and DataTables -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 
-      const submitButton = document.getElementById('submitButton');
-      submitButton.addEventListener('click', () => {
-        const elapsed = Date.now();
-        const date = new Date(elapsed);
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
-        var inq = {
-          "key": String(elapsed),
-          "time": date.toLocaleString('en-US', { timeZone: 'America/New_York' }),
-          "name": String(document.getElementById("inqFormName").value),
-          "email": String(document.getElementById("inqFormMail").value),
-          "phone": String(document.getElementById("inqFormNum").value)
-        }
-        console.log(JSON.stringify(inq));
+  <!-- Styles -->
+  <link href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css" rel="stylesheet">
+  <link href="../styles/musical.css" rel="stylesheet">
+</head>
 
-        var issue = false;
-        if (!inq.name)
-        {
-          console.log("no name");
-          issue = true;
-          window.alert("Please enter your name!");
-        }
-        if (!(inq.phone || inq.email))
-        {
-          console.log("no email or number");
-          issue = true;
-          window.alert("Please enter your phone number and/or email address!");
-        }
-
-        if (!issue)
-        {
-          var newInqRef = inqRef.push();
-          newInqRef.set({
-            time: inq.time,
-            name: inq.name,
-            email: inq.email,
-            phone: inq.phone
-          });
-          console.log("Data set");
-        }
-
-        inqForm.reset(); 	
-      });
-
-      import { getAuth } from 'https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js';
-
-      const table = new DataTable('#example');
-
-      function addElement(child) {
-        var inq = child.val();
-        console.log(inq.time + " | " + inq.name + " | " + inq.email + " | " + inq.phone);
-        table.row
-          .add([
-            String(inq.time),  
-            String(inq.name),
-            String(inq.email),
-            String(inq.phone)
-          ])
-          .draw();
-      }
-
-      function toggleVisibility(id) {
-        var x = document.getElementById(id);
-        if (x.style.display === "none") {
-          x.style.display = "block";
-        } else {
-          x.style.display = "none";
-        }    
-      }
-
-      function loadTable() {
-        console.log("loadTable()");
-        toggleVisibility("inqContainer");
-        inqRef.orderByChild('time').on('child_added', (data) => {
-          addElement(data);
-        });
-      }
-
-      const loginButton = document.getElementById('login');
-      loginButton.addEventListener('click', () => {
-        var email = String(document.getElementById("loginEmail").value);
-        var password = String(document.getElementById("loginPw").value);
-        firebase.auth().signInWithEmailAndPassword(email, password)
-          .then((userCredential) => {
-            // Signed in
-            var user = userCredential.user;
-            toggleVisibility("loginContainer");
-            loadTable();
-            // ...
-          })
-          .catch((error) => {
-            var errorCode = error.code;
-            var errorMessage = error.message;
-          });
-      });
-    </script> 
-
-
-    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
-    <link href="https://cdn.datatables.net/2.0.7/css/dataTables.dataTables.css" rel="stylesheet">
-    <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../styles/musical.css" rel="stylesheet">
-    <style>
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
-      }
-
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
-      }
-
-      .b-example-divider {
-        height: 3rem;
-        background-color: rgba(0, 0, 0, .1);
-        border: solid rgba(0, 0, 0, .15);
-        border-width: 1px 0;
-        box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
-      }
-
-      .b-example-vr {
-        flex-shrink: 0;
-        width: 1.5rem;
-        height: 100vh;
-      }
-
-      .bi {
-        vertical-align: -.125em;
-        fill: currentColor;
-      }
-
-      .nav-scroller {
-        position: relative;
-        z-index: 2;
-        height: 2.75rem;
-        overflow-y: hidden;
-      }
-
-      .nav-scroller .nav {
-        display: flex;
-        flex-wrap: nowrap;
-        padding-bottom: 1rem;
-        margin-top: -1px;
-        overflow-x: auto;
-        text-align: center;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-      }
-      .maintxt {
-        background-image: url(assets/icon/heartSin.gif);
-        background-size: cover;
-        width: 100px;
-        height: 100px;
-      }
-    </style>
-  </head>
 <body>
-    
-<header>
-  <nav class="navbar navbar-expand-md fixed-top bg-white">
-    <div class="container-fluid">
-      <img src="../assets/icon/logo.gif" width="25%" height="25%" class="d-inline-block align-top" alt="Bootstrap" loading="lazy"></img>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+  <nav class="navbar">
+    <div class="container navbar-content">
+      <img src="../assets/icon/logo.gif" alt="Musical Memoirs" class="logo" width="150" height="50">
+      <button id="mobile-menu" class="mobile-menu" aria-label="Toggle menu">
+        <span class="hamburger"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarCollapse">
-        <ul class="navbar-nav me-auto mb-2 mb-md-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="../index.html">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="../samples/index.html">Sample Projects</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="modal" data-bs-target="#signup">Get Started</a>
-          </li>
-        </ul>
-      </div>
+      <ul class="nav-links">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="../samples/index.html" class="nav-link">Sample Projects</a></li>
+        <li><a href="#" class="nav-link" onclick="openModal('signup')">Get Started</a></li>
+      </ul>
     </div>
   </nav>
-</header>
 
-<main>
-  <div class="modal" id="signup" role="dialog">
-    <div class="modal-dialog">
-      <div class="modal-content rounded-4 shadow">
-        <div class="modal-header p-5 pb-4 border-bottom-0">
-          <h1 class="fw-bold mb-0 fs-2" style="color:#942626" >Create your Musical Memoir today</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body p-5 pt-0">
-          <form class="" id="inqForm">
-            <div class="form-floating mb-3">
-              <input type="name" class="form-control rounded-3" id="inqFormName" placeholder="First Last">
-              <label for="inqFormName">Full name</label>
-            </div>
-            <div class="form-floating mb-3">
-              <input type="email" class="form-control rounded-3" id="inqFormMail" placeholder="name@example.com">
-              <label for="inqFormMail">Email address</label>
-            </div>
-            <div class="form-floating mb-3">
-              <input type="phone" class="form-control rounded-3" id="inqFormNum" placeholder="(123)456-7890">
-              <label for="inqFormNum">Phone number</label>
-            </div>
-            <button class="w-100 mb-2 btn btn-lg rounded-3 btn-fit" id="submitButton">Get started</button>
-            <small class="text-muted">By clicking Get started, you agree to be contacted by Musical Memoirs.</small>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="container">
-    <hr class="featurette-divider">
-    <div class="row featurette">
-      <div class="col-md-7 order-md-2">
-        <div id="loginContainer">
-          <h2 class="featurette-heading fw-normal lh-1"><span class="text-muted"><b>Login</b></span></h2>
-          <form class="" id="loginForm">
-            <div class="form-floating mb-3">
-              <input type="name" class="form-control rounded-3" id="loginEmail" placeholder="name@example.com">
-              <label for="loginEmail">Email address</label>
-            </div>
-            <div class="form-floating mb-3">
-              <input type="email" class="form-control rounded-3" id="loginPw" placeholder="password">
-              <label for="loginPw">Password</label>
-            </div>
-          </form>
-          <button class="w-100 mb-2 btn btn-lg rounded-3 btn-fit" id="login">Login</button>
-        </div>
-        <div id="inqContainer" style="display:none">
-          <table id="example" class="display" style="width:100%">
-            <thead>
+  <main>
+    <!-- Login Section -->
+    <section class="section">
+      <div class="container">
+        <div class="card">
+          <div id="loginContainer">
+            <h2 class="section-title">Admin Login</h2>
+            <form id="loginForm">
+              <div class="form-group">
+                <input type="email" id="loginEmail" class="form-control" placeholder="Email address" required>
+              </div>
+              <div class="form-group">
+                <input type="password" id="loginPw" class="form-control" placeholder="Password" required>
+              </div>
+              <button type="submit" class="btn" id="login">Login</button>
+            </form>
+          </div>
+          <div id="inqContainer" style="display:none">
+            <h2 class="section-title">Inquiries</h2>
+            <table id="inquiriesTable" class="display" style="width:100%">
+              <thead>
                 <tr>
-                    <th>Time</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
+                  <th>Time</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
                 </tr>
-            </thead>
-          </table>
+              </thead>
+            </table>
+          </div>
         </div>
       </div>
+    </section>
+
+    <!-- Signup Modal -->
+    <div id="signup" class="modal">
+      <div class="modal-content">
+        <h2>Create your Musical Memoir today</h2>
+        <button class="modal-close" onclick="closeModal('signup')" aria-label="Close modal">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+        <form id="inqForm">
+          <div class="form-group">
+            <input type="text" id="inqFormName" class="form-control" placeholder="Full name" required>
+          </div>
+          <div class="form-group">
+            <input type="email" id="inqFormMail" class="form-control" placeholder="Email address">
+          </div>
+          <div class="form-group">
+            <input type="tel" id="inqFormNum" class="form-control" placeholder="Phone number">
+          </div>
+          <button type="submit" class="btn">Get Started</button>
+          <small>By clicking Get started, you agree to be contacted by Musical Memoirs.</small>
+        </form>
+      </div>
     </div>
-  </div><!-- /.container -->
-  <!-- FOOTER -->
-  <footer class="container">
-    <p class="float-end"><a href="#">Back to top</a></p>
-    <p>&copy; 2023 Musical Memoirs &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2024 Musical Memoirs &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+      <p><a href="#">Back to top</a></p>
+    </div>
   </footer>
-</main>
 
+  <!-- Scripts -->
+  <script src="../scripts/app.js"></script>
+</body>
 
-    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
-
-      
-  </body>
 </html>

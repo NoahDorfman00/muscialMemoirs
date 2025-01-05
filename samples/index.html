@@ -1,267 +1,119 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="Noah Dorfman">
-    <meta name="generator" content="Hugo 0.108.0">
-    <title>Musical Memoirs</title>
 
-    <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
-    <!-- <script type="module" src="../scripts/firebaseInit.js"></script>
-    <script type="module" src="../scripts/inquiryTx.js"></script> -->
-    <script type="module">
-      // Initialize Firebase
-      const config = {
-          apiKey: "AIzaSyD9DKwr7qp-QJHCVegItvSDktSuR48yuJI",
-          authDomain: "musicalmemoirs-f35ba.firebaseapp.com",
-          databaseURL: "https://musicalmemoirs-f35ba-default-rtdb.firebaseio.com",
-          projectId: "musicalmemoirs-f35ba",
-          storageBucket: "musicalmemoirs-f35ba.appspot.com",
-          messagingSenderId: "1008437474417",
-          appId: "1:1008437474417:web:05075de89f9a038b8217d0",
-          measurementId: "G-PVM7TH88DH"
-      };
-      firebase.initializeApp(config);
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Musical Memoirs Sample Projects - Listen to our heartbeat recordings">
+  <meta name="author" content="Noah Dorfman">
+  <title>Musical Memoirs - Sample Projects</title>
 
-      firebase.auth().useDeviceLanguage();
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/4.12.1/firebase.js"></script>
 
-      const Ref = firebase.database().ref();
-      const inqRef = firebase.database().ref().child("Inquiries");
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
-      const submitButton = document.getElementById('submitButton');
-      submitButton.addEventListener('click', () => {
-        const elapsed = Date.now();
-        const date = new Date(elapsed);
+  <!-- Styles -->
+  <link href="../styles/musical.css" rel="stylesheet">
+</head>
 
-        var inq = {
-          "key": String(elapsed),
-          "time": date.toLocaleString('en-US', { timeZone: 'America/New_York' }),
-          "name": String(document.getElementById("inqFormName").value),
-          "email": String(document.getElementById("inqFormMail").value),
-          "phone": String(document.getElementById("inqFormNum").value)
-        }
-        console.log(JSON.stringify(inq));
-
-        var issue = false;
-        if (!inq.name)
-        {
-          console.log("no name");
-          issue = true;
-          window.alert("Please enter your name!");
-        }
-        if (!(inq.phone || inq.email))
-        {
-          console.log("no email or number");
-          issue = true;
-          window.alert("Please enter your phone number and/or email address!");
-        }
-
-        if (!issue)
-        {
-          var newInqRef = inqRef.push();
-          newInqRef.set({
-            time: inq.time,
-            name: inq.name,
-            email: inq.email,
-            phone: inq.phone
-          });
-          console.log("Data set");
-        }
-
-        inqForm.reset(); 	
-      });
-    </script> 
-
-    <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../styles/musical.css" rel="stylesheet">
-
-    <style>
-
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
-      }
-
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
-      }
-
-      .b-example-divider {
-        height: 3rem;
-        background-color: rgba(0, 0, 0, .1);
-        border: solid rgba(0, 0, 0, .15);
-        border-width: 1px 0;
-        box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
-      }
-
-      .b-example-vr {
-        flex-shrink: 0;
-        width: 1.5rem;
-        height: 100vh;
-      }
-
-      .bi {
-        vertical-align: -.125em;
-        fill: currentColor;
-      }
-
-      .nav-scroller {
-        position: relative;
-        z-index: 2;
-        height: 2.75rem;
-        overflow-y: hidden;
-      }
-
-      .nav-scroller .nav {
-        display: flex;
-        flex-wrap: nowrap;
-        padding-bottom: 1rem;
-        margin-top: -1px;
-        overflow-x: auto;
-        text-align: center;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-      }
-      .maintxt {
-        background-image: url(assets/icon/heartSin.gif);
-        background-size: cover;
-        width: 100px;
-        height: 100px;
-      }
-    </style>
-
-    
-    <!-- Custom styles for this template -->
-    <link href="../styles/musical.css" rel="stylesheet">
-  </head>
-  <body>
-    
-<header>
-  <nav class="navbar navbar-expand-md fixed-top bg-white">
-    <div class="container-fluid">
-      <img src="../assets/icon/logo.gif" width="25%" height="25%" class="d-inline-block align-top" alt="Bootstrap" loading="lazy"></img>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
+<body>
+  <nav class="navbar">
+    <div class="container navbar-content">
+      <img src="../assets/icon/logo.gif" alt="Musical Memoirs" class="logo" width="150" height="50">
+      <button id="mobile-menu" class="mobile-menu" aria-label="Toggle menu">
+        <span class="hamburger"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarCollapse">
-        <ul class="navbar-nav me-auto mb-2 mb-md-0">
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="../index.html">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="../samples/index.html">Sample Projects</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="modal" data-bs-target="#signup">Get Started</a>
-          </li>
-        </ul>
-      </div>
+      <ul class="nav-links">
+        <li><a href="../index.html" class="nav-link">Home</a></li>
+        <li><a href="#" class="nav-link active">Sample Projects</a></li>
+        <li><a href="#" class="nav-link" onclick="openModal('signup')">Get Started</a></li>
+      </ul>
     </div>
   </nav>
-</header>
 
-<main>
-  <div class="container">
-    <div class="modal" id="signup" role="dialog">
-      <div class="modal-dialog">
-        <div class="modal-content rounded-4 shadow">
-          <div class="modal-header p-5 pb-4 border-bottom-0">
-            <h1 class="fw-bold mb-0 fs-2" style="color:#942626" >Create your Musical Memoir today</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  <main>
+    <!-- About Section -->
+    <section class="section">
+      <div class="container">
+        <div class="card">
+          <h2 class="section-title">About <span>Heartbeat Recordings</span></h2>
+          <p>Heartbeat recordings are an incredible way to incorporate the natural beat of a loved one's heart with
+            songs that hold significance in their life. These recordings not only represent a person as they are now,
+            through the sound of their heart; they encapsulate the person's memories and lived experiences, and preserve
+            them forever through song. Every heartbeat recording that is created is unique and special, just like the
+            heart, music, and personal experiences it is associated with.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sample Projects -->
+    <section class="section">
+      <div class="container">
+        <div class="media-grid">
+          <div class="card sample-project">
+            <div class="sample-project-content">
+              <h2>The Taylors' Song <span>(Jacob)</span></h2>
+              <p>Created for a husband and wife who began their story deeply rooted in activism 60 years ago. This
+                collection of songs, meaningful to the couple, is strung together through the steady beat of the heart.
+              </p>
+            </div>
+            <audio controls>
+              <source src="../assets/sound/taylor.mp3">
+            </audio>
           </div>
-          <div class="modal-body p-5 pt-0">
-            <form class="" id="inqForm">
-              <div class="form-floating mb-3">
-                <input type="name" class="form-control rounded-3" id="inqFormName" placeholder="First Last">
-                <label for="inqFormName">Full name</label>
-              </div>
-              <div class="form-floating mb-3">
-                <input type="email" class="form-control rounded-3" id="inqFormMail" placeholder="name@example.com">
-                <label for="inqFormMail">Email address</label>
-              </div>
-              <div class="form-floating mb-3">
-                <input type="phone" class="form-control rounded-3" id="inqFormNum" placeholder="(123)456-7890">
-                <label for="inqFormNum">Phone number</label>
-              </div>
-              <button class="w-100 mb-2 btn btn-lg rounded-3 btn-fit" id="submitButton">Get started</button>
-              <small class="text-muted">By clicking Get started, you agree to be contacted by Musical Memoirs.</small>
-            </form>
+          <div class="card sample-project">
+            <div class="sample-project-content">
+              <h2>The Potters' Song <span>(Gabi)</span></h2>
+              <p>Created for a husband and wife, married 52 years, while she was on hospice. This original song blends
+                the
+                sounds of the couple's two heartbeats under a medley of his and her favorite song, ebbing and flowing
+                between his song and hers to reflect their unending love and connection.</p>
+            </div>
+            <audio controls>
+              <source src="../assets/sound/potter.mp3">
+            </audio>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- Marketing messaging and featurettes
-  ================================================== -->
-  <!-- Wrap the rest of the page in another container to center all the content. -->
-
-  <div class="container marketing">
-
-
-    <!-- START THE FEATURETTES -->
-
-    <hr class="featurette-divider">
-
-    <div class="row featurette">
-      <div class="col-md-7 order-md-2">
-        <h2 class="featurette-heading fw-normal lh-1"><span class="text-muted"><b>About</b></span> <i>Heartbeat Recordings</i></h2>
-        <p class="lead">Heartbeat recordings are an incredible way to incorporate the natural beat of a loved one’s heart with songs that hold significance in their life. These recordings not only represent a person as they are now, through the sound of their heart; they encapsulate the person’s memories and lived experiences, and preserve them forever through song. Every heartbeat recording that is created is unique and special, just like the heart, music, and personal experiences it is associated with.</p>
+    <!-- Signup Modal -->
+    <div id="signup" class="modal">
+      <div class="modal-content">
+        <h2>Create your Musical Memoir today</h2>
+        <button class="modal-close" onclick="closeModal('signup')" aria-label="Close modal">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+        <form id="inqForm">
+          <div class="form-group">
+            <input type="text" id="inqFormName" class="form-control" placeholder="Full name" required>
+          </div>
+          <div class="form-group">
+            <input type="email" id="inqFormMail" class="form-control" placeholder="Email address">
+          </div>
+          <div class="form-group">
+            <input type="tel" id="inqFormNum" class="form-control" placeholder="Phone number">
+          </div>
+          <button type="submit" class="btn">Get Started</button>
+          <small>By clicking Get started, you agree to be contacted by Musical Memoirs.</small>
+        </form>
       </div>
     </div>
+  </main>
 
-    <hr class="featurette-divider">
-
-    <div class="row featurette">
-      <div class="col-md-7 order-md-2">
-        <h2 class="featurette-heading fw-normal lh-1">The Taylors’ Song <span class="text-muted"><b><i>(Jacob)</i></b></span></h2>
-        <p class="lead">Created for a husband and wife who began their story deeply rooted in activism 60 years ago. This collection of songs, meaningful to the couple, is strung together through the steady beat of the heart.</p>
-      </div>
-      <div class="col-md-5 order-md-1 row align-items-center">
-        <audio controls style="width: 100%;">
-          <source src="../assets/sound/taylor.mp3">
-        </audio>
-      </div>
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2024 Musical Memoirs &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+      <p><a href="#">Back to top</a></p>
     </div>
-
-    <hr class="featurette-divider">
-
-    <div class="row featurette">
-      <div class="col-md-7">
-        <h2 class="featurette-heading fw-normal lh-1">The Potters’ Song <span class="text-muted"><b><i>(Gabi)</i></b></span></h2>
-        <p class="lead">Created for a husband and wife, married 52 years, while she was on hospice. This original song blends the sounds of the couple’s two heartbeats under a medley of his and her favorite song, ebbing and flowing between his song and hers to reflect their unending love and connection.</p>
-      </div>
-      <div class="col-md-5 row align-items-center">
-        <audio controls style="width: 100%;">
-          <source src="../assets/sound/potter.mp3">
-        </audio>
-      </div>
-    </div>
-
-    <hr class="featurette-divider">
-
-    <!-- /END THE FEATURETTES -->
-
-  </div><!-- /.container -->
-
-
-  <!-- FOOTER -->
-  <footer class="container">
-    <p class="float-end"><a href="#">Back to top</a></p>
-    <p>&copy; 2023 Musical Memoirs &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
   </footer>
-</main>
 
+  <!-- Scripts -->
+  <script src="../scripts/app.js"></script>
+</body>
 
-    <script src="../assets/dist/js/bootstrap.bundle.min.js"></script>
-
-      
-  </body>
 </html>
